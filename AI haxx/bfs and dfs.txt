@@ -1,0 +1,54 @@
+import networkx as nx
+import matplotlib.pyplot as plt
+from collections import deque
+class Graph:
+    def __init__(self, graph_dict=None):
+        if graph_dict is None:
+            graph_dict = {}
+        self.graph_dict = graph_dict
+    def add_edge(self, vertex, edge):
+        self.graph_dict[vertex].append(edge)
+    def bfs(self, start):
+        visited = set()
+        queue = deque([start])
+        visited.add(start)
+        while queue:
+            vertex = queue.popleft()
+            print(vertex)  # Print the node as it's visited
+            for neighbor in self.graph_dict[vertex]:
+                if neighbor not in visited:
+                    visited.add(neighbor)
+                    queue.append(neighbor)
+    def dfs(self, start, visited=None):
+        if visited is None:
+            visited = set()
+        visited.add(start)
+        print(start)  # Print the node as it's visited
+        for neighbor in self.graph_dict[start]:
+            if neighbor not in visited:
+                self.dfs(neighbor, visited)
+    def visualize_graph(self):
+        G = nx.Graph()
+        for node in self.graph_dict:
+            G.add_nodes_from(self.graph_dict[node])
+            for neighbor in self.graph_dict[node]:
+                G.add_edge(node, neighbor)
+
+        nx.draw(G, with_labels=True, font_weight='bold')
+        plt.show()
+if __name__ == "__main__":
+    graph_dict = {
+        'A': ['B', 'C'],
+        'B': ['A', 'D', 'E'],
+        'C': ['A', 'F'],
+        'D': ['B'],
+        'E': ['B', 'F'],
+        'F': ['C', 'E']
+    }
+    graph = Graph(graph_dict)
+    print("Graph Visualization:")
+    graph.visualize_graph()
+    print("\nBFS Traversal:")
+    graph.bfs('A')
+    print("\nDFS Traversal:")
+    graph.dfs('A')

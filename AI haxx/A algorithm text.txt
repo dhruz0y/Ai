@@ -1,0 +1,75 @@
+import networkx as nx
+import matplotlib.pyplot as plt
+from queue import PriorityQueue
+class Graph:
+    def __init__(self, graph_dict=None):
+        if graph_dict is None:
+            graph_dict = {}
+        self.graph_dict = graph_dict
+    def add_edge(self, vertex, edge, cost=0):
+        self.graph_dict[vertex].append((edge, cost))
+    def astar(self, start, goal, heuristic):
+        visited = set()
+        priority_queue = PriorityQueue()
+        priority_queue.put((0, start))
+        visited.add(start)
+        came_from = {}
+        cost_so_far = {start: 0}
+        while not priority_queue.empty():
+            _, current_vertex = priority_queue.get()
+            if current_vertex == goal:
+                path = self.reconstruct_path(came_from, start, goal)
+                return path
+            for neighbor, cost in self.graph_dict[current_vertex]:
+                new_cost = cost_so_far[current_vertex] + cost
+                if neighbor not in cost_so_far or new_cost < cost_so_far[neighbor]:
+                    cost_so_far[neighbor] = new_cost
+                    priority = new_cost + heuristic[neighbor]
+                    priority_queue.put((priority, neighbor))
+                    visited.add(neighbor)
+                    came_from[neighbor] = current_vertex
+        return None
+    def reconstruct_path(self, came_from, start, goal):
+        current = goal
+        path = []
+        while current != start:
+            path.append(current)
+            current = came_from[current]
+        path.append(start)
+        path.reverse()
+        return path
+    def visualize_graph_with_path(self, path=None):
+        G = nx.Graph()
+        for node in self.graph_dict:
+            G.add_nodes_from(self.graph_dict[node])
+            for neighbor, _ in self.graph_dict[node]:
+                G.add_edge(node, neighbor)
+        pos = nx.spring_layout(G)
+        nx.draw(G, pos, with_labels=True, font_weight='bold')
+
+        if path:
+            edges = [(path[i], path[i + 1]) for i in range(len(path) - 1)]
+            nx.draw_networkx_nodes(G, pos, nodelist=path, node_color='r')
+            nx.draw_networkx_edges(G, pos, edgelist=edges, edge_color='r', width=2)
+        plt.show()
+if __name__ == "__main__":
+    graph_dict = {
+        'A': [('B', 3), ('C', 5)],
+        'B': [('A', 3), ('D', 2), ('E', 4)],
+        'C': [('A', 5), ('F', 6)],
+        'D': [('B', 2)],
+        'E': [('B', 4), ('F', 7)],
+        'F': [('C', 6), ('E', 7)]
+    }
+    graph = Graph(graph_dict)
+    print("Graph Visualization:")
+    graph.visualize_graph_with_path()
+    print("\nA* Search Traversal:")
+    heuristic = {'A': 5, 'B': 4, 'C': 2, 'D': 2, 'E': 3, 'F': 0}
+    path = graph.astar('A', 'F', heuristic)
+    if path:
+        print("Path:", path)
+        print("\nGraph Visualization with Path:")
+        graph.visualize_graph_with_path(path)
+    else:
+        print("Goal not found!")

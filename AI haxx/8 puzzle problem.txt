@@ -1,0 +1,63 @@
+class Puzzle:
+    def __init__(self, state):
+        self.state = state
+    
+    def __str__(self):
+        string = ''
+        for row in self.state:
+            string += ' '.join(map(str, row)) + '\n'
+        return string
+    
+    def find_blank(self):
+        for i in range(3):
+            for j in range(3):
+                if self.state[i][j] == 0:
+                    return i, j
+    
+    def generate_moves(self):
+        moves = []
+        blank_row, blank_col = self.find_blank()
+        
+        # Move left
+        if blank_col > 0:
+            new_state = [row[:] for row in self.state]
+            new_state[blank_row][blank_col], new_state[blank_row][blank_col - 1] = \
+                new_state[blank_row][blank_col - 1], new_state[blank_row][blank_col]
+            moves.append(Puzzle(new_state))
+        
+        # Move right
+        if blank_col < 2:
+            new_state = [row[:] for row in self.state]
+            new_state[blank_row][blank_col], new_state[blank_row][blank_col + 1] = \
+                new_state[blank_row][blank_col + 1], new_state[blank_row][blank_col]
+            moves.append(Puzzle(new_state))
+        
+        # Move up
+        if blank_row > 0:
+            new_state = [row[:] for row in self.state]
+            new_state[blank_row][blank_col], new_state[blank_row - 1][blank_col] = \
+                new_state[blank_row - 1][blank_col], new_state[blank_row][blank_col]
+            moves.append(Puzzle(new_state))
+        
+        # Move down
+        if blank_row < 2:
+            new_state = [row[:] for row in self.state]
+            new_state[blank_row][blank_col], new_state[blank_row + 1][blank_col] = \
+                new_state[blank_row + 1][blank_col], new_state[blank_row][blank_col]
+            moves.append(Puzzle(new_state))
+        
+        return moves
+
+# Example usage:
+initial_state = [
+    [1, 2, 3],
+    [0, 4, 5],
+    [7, 8, 6]
+]
+puzzle = Puzzle(initial_state)
+print("Initial State:")
+print(puzzle)
+
+print("Possible Moves:")
+for move in puzzle.generate_moves():
+    print(move)

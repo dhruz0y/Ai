@@ -1,0 +1,55 @@
+import heapq
+import networkx as nx
+import matplotlib.pyplot as plt
+
+class Graph:
+    def __init__(self, graph_dict=None):
+        if graph_dict is None:
+            graph_dict = {}
+        self.graph_dict = graph_dict
+
+    def add_edge(self, vertex, edge, cost):
+        if vertex not in self.graph_dict:
+            self.graph_dict[vertex] = []
+        self.graph_dict[vertex].append((edge, cost))
+
+    def best_first_search(self, start, goal):
+        visited = set()
+        priority_queue = [(0, start)]
+        
+        while priority_queue:
+            cost, current_node = heapq.heappop(priority_queue)
+            visited.add(current_node)
+            print(current_node)  # Print the node as it's visited
+            if current_node == goal:
+                return True
+            
+            for neighbor, neighbor_cost in self.graph_dict.get(current_node, []):
+                if neighbor not in visited:
+                    heapq.heappush(priority_queue, (neighbor_cost, neighbor))
+        
+        return False
+
+    def visualize_graph(self):
+        G = nx.Graph()
+        for node in self.graph_dict:
+            for neighbor, _ in self.graph_dict[node]:
+                G.add_edge(node, neighbor)
+
+        nx.draw(G, with_labels=True, font_weight='bold')
+        plt.show()
+
+if __name__ == "__main__":
+    graph_dict = {
+        'A': [('B', 5), ('C', 7)],
+        'B': [('D', 3), ('E', 4)],
+        'C': [('F', 6)],
+        'D': [],
+        'E': [],
+        'F': []
+    }
+    graph = Graph(graph_dict)
+    print("Graph Visualization:")
+    graph.visualize_graph()
+    print("\nBest-First Search Traversal:")
+    graph.best_first_search('A', 'F')

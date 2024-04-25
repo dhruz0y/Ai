@@ -1,0 +1,87 @@
+Spare Tyre Problem:
+In the Spare Tyre Problem, we have three locations: the Spare Location, the Jack Location, and the Flat Location. The goal is to move the spare tyre from the Spare Location to the Flat Location using the Jack.
+
+Here's an ADL script for the Spare Tyre Problem:
+
+Types:
+  location
+
+Predicates:
+  at(location)
+  has(spare)
+
+Actions:
+  drive(Location1, Location2)
+  pick_up_spare
+  jack_up
+  remove_flat
+  put_on_spare
+
+Axioms:
+  at(spare_location) => has(spare)
+  at(flat_location) => ¬has(spare)
+  ¬at(flat_location) => has(spare)
+
+Strips:
+  drive(Location1, Location2)
+    PRECONDITIONS: at(Location1)
+    EFFECTS: ¬at(Location1), at(Location2)
+
+  pick_up_spare
+    PRECONDITIONS: at(spare_location)
+    EFFECTS: ¬at(spare_location), has(spare)
+
+  jack_up
+    PRECONDITIONS: at(flat_location), has(spare)
+    EFFECTS: ¬at(flat_location)
+
+  remove_flat
+    PRECONDITIONS: at(flat_location)
+    EFFECTS: ¬at(flat_location)
+
+  put_on_spare
+    PRECONDITIONS: at(flat_location), has(spare)
+    EFFECTS: ¬has(spare)
+
+
+
+
+
+Cargo-Plane Airport Problem:
+In the Cargo-Plane Airport Problem, we have a cargo plane and a cargo to load into the plane. The goal is to load the cargo into the plane at the airport.
+
+Here's an ADL script for the Cargo-Plane Airport Problem:
+
+Types:
+  location
+
+Predicates:
+  at(location)
+  has(cargo)
+  in_plane(cargo)
+
+Actions:
+  drive(Location1, Location2)
+  load_cargo
+  fly_plane
+  unload_cargo
+
+Axioms:
+  at(airport_location)
+
+Strips:
+  drive(Location1, Location2)
+    PRECONDITIONS: at(Location1)
+    EFFECTS: ¬at(Location1), at(Location2)
+
+  load_cargo
+    PRECONDITIONS: at(airport_location), has(cargo)
+    EFFECTS: ¬at(airport_location), in_plane(cargo)
+
+  fly_plane
+    PRECONDITIONS: at(airport_location), in_plane(cargo)
+    EFFECTS: ¬at(airport_location)
+
+  unload_cargo
+    PRECONDITIONS: at(airport_location), in_plane(cargo)
+    EFFECTS: ¬in_plane(cargo)
